@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("admin") // admin, staff
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Student {
+  id              String   @id @default(cuid())
+  admissionNo     String   @unique
+  firstName       String
+  lastName        String
+  email           String?
+  phone           String
+  dateOfBirth     DateTime?
+  gender          String?
+  address         String?
+  city            String?
+  state           String?
+  pincode         String?
+  guardianName    String?
+  guardianPhone   String?
+  guardianRelation String?
+  photo           String?  // file path or URL
+  status          String   @default("active") // active, inactive, completed
+  scholarshipStatus String? // none, applied, approved, rejected
+  scholarshipAmount Float?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  documents   Document[]
+  fees        Fee[]
+  enrollment  Enrollment?
+}
+
+model Document {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  name        String   // e.g. "Aadhaar Card", "10th Certificate"
+  type        String   // identity, education, address, photo, other
+  filePath    String?  // path or URL to uploaded file
+  status      String   @default("pending") // pending, uploaded, verified, rejected
+  remarks     String?
+  uploadedAt  DateTime?
+  verifiedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @unique
+  duration    String   // e.g. "3 months", "6 months"
+  fee         Float
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  batches     Batch[]
+  enrollments Enrollment[]
+}
+
+model Batch {
+  id          String   @id @default(cuid())
+  name        String   // e.g. "Batch A - Jan 2026"
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id])
+  startDate   DateTime
+  endDate     DateTime?
+  capacity    Int      @default(30)
+  status      String   @default("upcoming") // upcoming, ongoing, completed
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  enrollments Enrollment[]
+}
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  studentId String   @unique
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId   String
+  course    Course   @relation(fields: [courseId], references: [id])
+  batchId   String?
+  batch     Batch?   @relation(fields: [batchId], references: [id])
+  enrolledAt DateTime @default(now())
+  status    String   @default("enrolled") // enrolled, dropped, completed
+}
+
+model Fee {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  amount      Float
+  type        String   // tuition, registration, exam, material, other
+  description String?
+  dueDate     DateTime?
+  paidDate    DateTime?
+  paidAmount  Float?
+  status      String   @default("pending") // pending, partial, paid, overdue, waived
+  paymentMode String?  // cash, upi, bank_transfer, cheque
+  receiptNo   String?
+  remarks     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
