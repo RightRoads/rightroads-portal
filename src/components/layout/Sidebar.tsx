@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: '📊' },
+  { href: '/enquiries', label: 'Enquiries', icon: '📋' },
   { href: '/students', label: 'Students', icon: '🎓' },
   { href: '/courses', label: 'Courses', icon: '📚' },
   { href: '/batches', label: 'Batches', icon: '👥' },

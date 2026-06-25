@@ -6,6 +6,8 @@ import { redirect } from 'next/navigation'
 import { generateAdmissionNo } from '@/lib/utils'
 
 export async function createStudent(formData: FormData) {
+  const enquiryId = (formData.get('enquiryId') as string) || null
+
   const data = {
     admissionNo: generateAdmissionNo(),
     firstName: formData.get('firstName') as string,
@@ -27,6 +29,15 @@ export async function createStudent(formData: FormData) {
 
   const student = await prisma.student.create({ data })
 
+  // Mark enquiry as converted if this came from an enquiry
+  if (enquiryId) {
+    await prisma.enquiry.update({
+      where: { id: enquiryId },
+      data: { status: 'converted', convertedToStudentId: student.id },
+    })
+    revalidatePath('/enquiries')
+  }
+
   // Create default required documents
   const requiredDocs = [
     { name: 'Aadhaar Card', type: 'identity' },
@@ -46,6 +57,7 @@ export async function createStudent(formData: FormData) {
   })
 
   revalidatePath('/students')
+  revalidatePath('/dashboard')
   redirect(`/students/${student.id}`)
 }
 
