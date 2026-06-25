@@ -16,6 +16,42 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
+model Enquiry {
+  id              String   @id @default(cuid())
+  firstName       String
+  lastName        String
+  email           String?
+  phone           String
+  dateOfBirth     DateTime?
+  gender          String?
+  address         String?
+  city            String?
+  state           String?
+  pincode         String?
+  guardianName    String?
+  guardianPhone   String?
+  guardianRelation String?
+  courseInterested String?
+  source          String?  // walk-in, phone, website, referral, social-media, other
+  status          String   @default("new") // new, contacted, follow-up, converted, closed
+  remarks         String?
+  nextFollowUp    DateTime?
+  convertedToStudentId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  followUps       FollowUp[]
+}
+
+model FollowUp {
+  id          String   @id @default(cuid())
+  enquiryId   String
+  enquiry     Enquiry  @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  note        String
+  contactedVia String? // phone, email, whatsapp, in-person
+  createdAt   DateTime @default(now())
+}
+
 model Student {
   id              String   @id @default(cuid())
   admissionNo     String   @unique

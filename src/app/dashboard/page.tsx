@@ -13,6 +13,10 @@ export default async function DashboardPage() {
     recentStudents,
     totalFeesCollected,
     totalFeesPending,
+    newEnquiries,
+    pendingFollowUps,
+    totalEnquiries,
+    convertedEnquiries,
   ] = await Promise.all([
     prisma.student.count(),
     prisma.student.count({ where: { status: 'active' } }),
@@ -33,9 +37,21 @@ export default async function DashboardPage() {
       where: { status: { in: ['pending', 'partial', 'overdue'] } },
       _sum: { amount: true },
     }),
+    prisma.enquiry.count({ where: { status: 'new' } }),
+    prisma.enquiry.count({
+      where: { status: 'follow-up', nextFollowUp: { lte: new Date() } },
+    }),
+    prisma.enquiry.count(),
+    prisma.enquiry.count({ where: { status: 'converted' } }),
   ])
 
+  const conversionRate = totalEnquiries > 0
+    ? Math.round((convertedEnquiries / totalEnquiries) * 100)
+    : 0
+
   const stats = [
+    { label: 'New Enquiries', value: newEnquiries, href: '/enquiries', color: 'bg-cyan-50 text-cyan-700' },
+    { label: 'Pending Follow-ups', value: pendingFollowUps, href: '/enquiries', color: 'bg-amber-50 text-amber-700' },
     { label: 'Total Students', value: totalStudents, href: '/students', color: 'bg-blue-50 text-blue-700' },
     { label: 'Active Students', value: activeStudents, href: '/students', color: 'bg-green-50 text-green-700' },
     { label: 'Pending Documents', value: pendingDocs, href: '/students', color: 'bg-orange-50 text-orange-700' },
@@ -62,8 +78,8 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {/* Financial Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      {/* Financial Summary & Enquiry Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div className="bg-white rounded-xl p-5 border border-gray-200">
           <p className="text-sm text-gray-500">Total Fees Collected</p>
           <p className="text-2xl font-bold text-green-600 mt-1">
@@ -74,6 +90,15 @@ export default async function DashboardPage() {
           <p className="text-sm text-gray-500">Total Fees Pending</p>
           <p className="text-2xl font-bold text-red-600 mt-1">
             {formatCurrency(totalFeesPending._sum.amount)}
+          </p>
+        </div>
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
+          <p className="text-sm text-gray-500">Enquiry Conversion Rate</p>
+          <p className="text-2xl font-bold text-blue-600 mt-1">
+            {conversionRate}%
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
+            {convertedEnquiries} of {totalEnquiries} enquiries
           </p>
         </div>
       </div>

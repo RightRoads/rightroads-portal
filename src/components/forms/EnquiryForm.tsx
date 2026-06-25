@@ -1,43 +1,23 @@
 'use client'
 
-import { createStudent } from '@/app/actions/students'
+import { createEnquiry } from '@/app/actions/enquiries'
 import { useActionState } from 'react'
 
-type Prefill = {
-  enquiryId?: string
-  firstName?: string
-  lastName?: string
-  email?: string
-  phone?: string
-  dateOfBirth?: string
-  gender?: string
-  address?: string
-  city?: string
-  state?: string
-  pincode?: string
-  guardianName?: string
-  guardianPhone?: string
-  guardianRelation?: string
-}
+type Course = { id: string; name: string; code: string }
 
-export function StudentForm({ prefill = {} }: { prefill?: Prefill }) {
+export function EnquiryForm({ courses }: { courses: Course[] }) {
   const [, action, pending] = useActionState(
     async (_prev: unknown, formData: FormData) => {
-      await createStudent(formData)
+      await createEnquiry(formData)
     },
     null
   )
 
   return (
     <form action={action} className="bg-white rounded-xl border border-gray-200 p-6">
-      {prefill.enquiryId && (
-        <input type="hidden" name="enquiryId" value={prefill.enquiryId} />
-      )}
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Personal Info */}
         <div className="md:col-span-2">
-          <h3 className="font-semibold text-gray-900 mb-3">Personal Information</h3>
+          <h3 className="font-semibold text-gray-900 mb-3">Contact Information</h3>
         </div>
 
         <div>
@@ -47,7 +27,6 @@ export function StudentForm({ prefill = {} }: { prefill?: Prefill }) {
           <input
             name="firstName"
             required
-            defaultValue={prefill.firstName}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
             placeholder="Enter first name"
           />
@@ -60,7 +39,6 @@ export function StudentForm({ prefill = {} }: { prefill?: Prefill }) {
           <input
             name="lastName"
             required
-            defaultValue={prefill.lastName}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
             placeholder="Enter last name"
           />
@@ -74,7 +52,6 @@ export function StudentForm({ prefill = {} }: { prefill?: Prefill }) {
             name="phone"
             type="tel"
             required
-            defaultValue={prefill.phone}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
             placeholder="Enter phone number"
           />
@@ -85,7 +62,6 @@ export function StudentForm({ prefill = {} }: { prefill?: Prefill }) {
           <input
             name="email"
             type="email"
-            defaultValue={prefill.email}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
             placeholder="Enter email"
           />
@@ -96,7 +72,6 @@ export function StudentForm({ prefill = {} }: { prefill?: Prefill }) {
           <input
             name="dateOfBirth"
             type="date"
-            defaultValue={prefill.dateOfBirth}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
           />
         </div>
@@ -105,7 +80,6 @@ export function StudentForm({ prefill = {} }: { prefill?: Prefill }) {
           <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
           <select
             name="gender"
-            defaultValue={prefill.gender}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
           >
             <option value="">Select gender</option>
@@ -116,7 +90,7 @@ export function StudentForm({ prefill = {} }: { prefill?: Prefill }) {
         </div>
 
         {/* Address */}
-        <div className="md:col-span-2 mt-4">
+        <div className="md:col-span-2 mt-2">
           <h3 className="font-semibold text-gray-900 mb-3">Address</h3>
         </div>
 
@@ -124,7 +98,6 @@ export function StudentForm({ prefill = {} }: { prefill?: Prefill }) {
           <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
           <input
             name="address"
-            defaultValue={prefill.address}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
             placeholder="Enter address"
           />
@@ -134,7 +107,6 @@ export function StudentForm({ prefill = {} }: { prefill?: Prefill }) {
           <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
           <input
             name="city"
-            defaultValue={prefill.city}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
             placeholder="Enter city"
           />
@@ -144,7 +116,6 @@ export function StudentForm({ prefill = {} }: { prefill?: Prefill }) {
           <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
           <input
             name="state"
-            defaultValue={prefill.state}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
             placeholder="Enter state"
           />
@@ -154,14 +125,13 @@ export function StudentForm({ prefill = {} }: { prefill?: Prefill }) {
           <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
           <input
             name="pincode"
-            defaultValue={prefill.pincode}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
             placeholder="Enter pincode"
           />
         </div>
 
         {/* Guardian */}
-        <div className="md:col-span-2 mt-4">
+        <div className="md:col-span-2 mt-2">
           <h3 className="font-semibold text-gray-900 mb-3">Guardian Details</h3>
         </div>
 
@@ -169,7 +139,6 @@ export function StudentForm({ prefill = {} }: { prefill?: Prefill }) {
           <label className="block text-sm font-medium text-gray-700 mb-1">Guardian Name</label>
           <input
             name="guardianName"
-            defaultValue={prefill.guardianName}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
             placeholder="Enter guardian name"
           />
@@ -180,7 +149,6 @@ export function StudentForm({ prefill = {} }: { prefill?: Prefill }) {
           <input
             name="guardianPhone"
             type="tel"
-            defaultValue={prefill.guardianPhone}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
             placeholder="Enter guardian phone"
           />
@@ -190,7 +158,6 @@ export function StudentForm({ prefill = {} }: { prefill?: Prefill }) {
           <label className="block text-sm font-medium text-gray-700 mb-1">Relation</label>
           <select
             name="guardianRelation"
-            defaultValue={prefill.guardianRelation}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
           >
             <option value="">Select relation</option>
@@ -201,6 +168,63 @@ export function StudentForm({ prefill = {} }: { prefill?: Prefill }) {
             <option value="Other">Other</option>
           </select>
         </div>
+
+        {/* Enquiry Details */}
+        <div className="md:col-span-2 mt-2">
+          <h3 className="font-semibold text-gray-900 mb-3">Enquiry Details</h3>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Course Interested In</label>
+          <select
+            name="courseInterested"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+          >
+            <option value="">Select course</option>
+            {courses.map((c) => (
+              <option key={c.id} value={c.name}>
+                {c.name} ({c.code})
+              </option>
+            ))}
+            <option value="Other">Other / Not Sure</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Source</label>
+          <select
+            name="source"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+          >
+            <option value="">How did they hear about us?</option>
+            <option value="walk-in">Walk-in</option>
+            <option value="phone">Phone Call</option>
+            <option value="website">Website</option>
+            <option value="referral">Referral</option>
+            <option value="social-media">Social Media</option>
+            <option value="newspaper">Newspaper</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Next Follow-up Date</label>
+          <input
+            name="nextFollowUp"
+            type="date"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
+          <textarea
+            name="remarks"
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+            placeholder="Any additional notes about the enquiry..."
+          />
+        </div>
       </div>
 
       <div className="mt-6 flex gap-3">
@@ -209,7 +233,7 @@ export function StudentForm({ prefill = {} }: { prefill?: Prefill }) {
           disabled={pending}
           className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors text-sm font-medium"
         >
-          {pending ? 'Creating...' : 'Create Admission'}
+          {pending ? 'Saving...' : 'Save Enquiry'}
         </button>
       </div>
     </form>
